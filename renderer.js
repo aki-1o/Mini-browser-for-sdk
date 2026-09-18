@@ -1,12 +1,12 @@
-const urlInput  = document.getElementById('url');
-const goBtn     = document.getElementById('go');
-const backBtn   = document.getElementById('back');
-const reloadBtn = document.getElementById('reload');
+const urlInput    = document.getElementById('url');
+const goBtn       = document.getElementById('go');
+const backBtn     = document.getElementById('back');
+const reloadBtn   = document.getElementById('reload');
 const devtoolsBtn = document.getElementById('devtools');
-const view      = document.getElementById('view');
-const statusEl  = document.getElementById('status');
+const statusEl    = document.getElementById('status');
 
 const LAST_URL_KEY = 'aa_last_url';
+const mb = window.miniBrowser;
 
 function showStatus(msg) {
   statusEl.textContent = msg;
@@ -17,39 +17,39 @@ function clearStatus() {
   statusEl.classList.remove('show');
 }
 
-function normalize(raw) {
-  let u = raw.trim();
-  if (!u) return '';
-  if (!/^https?:\/\//i.test(u)) u = 'http://' + u; // default to http for localhost
-  return u;
-}
-
-function navigate() {
-  const u = normalize(urlInput.value);
-  if (!u) return;
+async function navigate() {
+  const raw = urlInput.value;
+  if (!raw.trim()) return;
   clearStatus();
-  localStorage.setItem(LAST_URL_KEY, u);
-  view.src = u;
+  const applied = await mb.go(raw);       // main normalizes + loads
+  if (applied) {
+    urlInput.value = applied;
+    localStorage.setItem(LAST_URL_KEY, applied);
+  }
 }
 
 goBtn.addEventListener('click', navigate);
 urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') navigate(); });
-reloadBtn.addEventListener('click', () => view.reload());
-backBtn.addEventListener('click', () => { if (view.canGoBack()) view.goBack(); });
-devtoolsBtn.addEventListener('click', () => view.openDevTools());
+reloadBtn.addEventListener('click', () => mb.reload());
+backBtn.addEventListener('click', () => mb.back());
+devtoolsBtn.addEventListener('click', () => mb.devtools());
 
-// F12 opens DevTools for the loaded page (network/console/CORS debugging).
+// F12 toggles DevTools (docked) for the loaded page.
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'F12') view.openDevTools();
+  if (e.key === 'F12') mb.devtools();
 });
 
-// Load errors surfaced to the status bar.
-view.addEventListener('did-fail-load', (e) => {
-  // -3 = ERR_ABORTED (benign, e.g. redirects) — ignore.
-  if (e.errorCode === -3) return;
-  showStatus(`Load failed (${e.errorCode}): ${e.errorDescription} — ${e.validatedURL}`);
+// Events from main process.
+mb.onLoading(() => clearStatus());
+mb.onNavigated((url) => {
+  if (url && !url.startsWith('devtools://')) {
+    urlInput.value = url;
+    localStorage.setItem(LAST_URL_KEY, url);
+  }
 });
-view.addEventListener('did-start-loading', clearStatus);
+mb.onError((info) => {
+  showStatus(`Load failed (${info.errorCode}): ${info.errorDescription} — ${info.validatedURL}`);
+});
 
 // Restore last URL on startup.
 window.addEventListener('DOMContentLoaded', () => {

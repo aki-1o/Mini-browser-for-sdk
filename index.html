@@ -5,10 +5,12 @@
   <title>AA Mini Browser</title>
   <style>
     html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
-    body { display: flex; flex-direction: column; }
+    /* The page renders in a WebContentsView positioned by main.js below this bar.
+       Keep the shell UI confined to the top so it doesn't cover the page. */
     #bar {
       display: flex; gap: 6px; padding: 8px;
       background: #f0f0f0; border-bottom: 1px solid #ccc;
+      box-sizing: border-box;
     }
     #bar button {
       padding: 6px 12px; cursor: pointer; border: 1px solid #bbb;
@@ -20,27 +22,22 @@
       border: 1px solid #bbb; border-radius: 4px;
     }
     #status {
-      padding: 4px 8px; font-size: 12px; color: #c00;
+      padding: 2px 8px; font-size: 12px; color: #c00;
       background: #fff5f5; min-height: 16px; display: none;
     }
     #status.show { display: block; }
-    #view { flex: 1; border: none; width: 100%; }
   </style>
 </head>
 <body>
   <div id="bar">
     <button id="back" title="Back">&#9664;</button>
     <button id="reload" title="Reload">&#8635;</button>
-    <button id="devtools" title="Open DevTools (F12)">&#128295;</button>
+    <button id="devtools" title="Toggle DevTools (F12)">&#128295;</button>
     <input id="url" type="text"
            placeholder="Paste consent-journey URL (e.g. http://localhost:3000/?orgId=...&ecreq=...)" />
     <button id="go">Go</button>
   </div>
   <div id="status"></div>
-  <webview id="view"
-           allowpopups
-           webpreferences="webSecurity=no, allowRunningInsecureContent=yes, contextIsolation=no">
-  </webview>
   <script src="renderer.js"></script>
 </body>
 </html>
