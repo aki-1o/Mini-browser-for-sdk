@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('miniBrowser', {
 
   // Events pushed from main -> UI.
   onLoading:   (cb) => ipcRenderer.on('page-loading', () => cb()),
+  onLoaded:    (cb) => ipcRenderer.on('page-loaded', () => cb()),
   onNavigated: (cb) => ipcRenderer.on('page-navigated', (e, url) => cb(url)),
   onError:     (cb) => ipcRenderer.on('page-error', (e, info) => cb(info)),
 });

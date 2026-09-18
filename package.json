@@ -25,9 +25,11 @@
       "preload.js",
       "index.html",
       "renderer.js",
-      "package.json"
+      "package.json",
+      "assets/**"
     ],
     "win": {
+      "icon": "assets/favicon.ico",
       "target": [
         {
           "target": "nsis",

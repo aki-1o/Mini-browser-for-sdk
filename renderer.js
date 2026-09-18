@@ -4,9 +4,13 @@ const backBtn     = document.getElementById('back');
 const reloadBtn   = document.getElementById('reload');
 const devtoolsBtn = document.getElementById('devtools');
 const statusEl    = document.getElementById('status');
+const favicon     = document.getElementById('favicon');
 
 const LAST_URL_KEY = 'aa_last_url';
 const mb = window.miniBrowser;
+
+function startSpin() { favicon.classList.add('spinning'); }
+function stopSpin()  { favicon.classList.remove('spinning'); }
 
 function showStatus(msg) {
   statusEl.textContent = msg;
@@ -40,7 +44,8 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Events from main process.
-mb.onLoading(() => clearStatus());
+mb.onLoading(() => { clearStatus(); startSpin(); });
+mb.onLoaded(() => { stopSpin(); });
 mb.onNavigated((url) => {
   if (url && !url.startsWith('devtools://')) {
     urlInput.value = url;
@@ -48,6 +53,7 @@ mb.onNavigated((url) => {
   }
 });
 mb.onError((info) => {
+  stopSpin();
   showStatus(`Load failed (${info.errorCode}): ${info.errorDescription} — ${info.validatedURL}`);
 });
 

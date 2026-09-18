@@ -74,6 +74,7 @@ function createPageView() {
 
   // Forward load state / errors to the URL-bar renderer.
   contents.on('did-start-loading', () => win.webContents.send('page-loading'));
+  contents.on('did-stop-loading', () => win.webContents.send('page-loaded'));
   contents.on('did-fail-load', (e, errorCode, errorDescription, validatedURL) => {
     if (errorCode === -3) return; // ERR_ABORTED (benign)
     win.webContents.send('page-error', { errorCode, errorDescription, validatedURL });
@@ -85,6 +86,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1280,
     height: 900,
+    icon: path.join(__dirname, 'assets', 'favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

@@ -3,14 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <title>AA Mini Browser</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <style>
     html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
     /* The page renders in a WebContentsView positioned by main.js below this bar.
        Keep the shell UI confined to the top so it doesn't cover the page. */
     #bar {
-      display: flex; gap: 6px; padding: 8px;
+      display: flex; gap: 6px; align-items: center; padding: 8px;
       background: #f0f0f0; border-bottom: 1px solid #ccc;
       box-sizing: border-box;
+    }
+    #favicon {
+      width: 24px; height: 24px; flex: 0 0 auto;
+      image-rendering: pixelated;   /* keep the pixel-art crisp */
+    }
+    /* Spin while a page is loading/refreshing. */
+    #favicon.spinning { animation: spin 0.8s linear infinite; }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
     #bar button {
       padding: 6px 12px; cursor: pointer; border: 1px solid #bbb;
@@ -30,6 +41,7 @@
 </head>
 <body>
   <div id="bar">
+    <img id="favicon" src="assets/favicon.ico" alt="icon" />
     <button id="back" title="Back">&#9664;</button>
     <button id="reload" title="Reload">&#8635;</button>
     <button id="devtools" title="Toggle DevTools (F12)">&#128295;</button>
