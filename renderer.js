@@ -2,6 +2,7 @@ const urlInput  = document.getElementById('url');
 const goBtn     = document.getElementById('go');
 const backBtn   = document.getElementById('back');
 const reloadBtn = document.getElementById('reload');
+const devtoolsBtn = document.getElementById('devtools');
 const view      = document.getElementById('view');
 const statusEl  = document.getElementById('status');
 
@@ -35,6 +36,12 @@ goBtn.addEventListener('click', navigate);
 urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') navigate(); });
 reloadBtn.addEventListener('click', () => view.reload());
 backBtn.addEventListener('click', () => { if (view.canGoBack()) view.goBack(); });
+devtoolsBtn.addEventListener('click', () => view.openDevTools());
+
+// F12 opens DevTools for the loaded page (network/console/CORS debugging).
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'F12') view.openDevTools();
+});
 
 // Load errors surfaced to the status bar.
 view.addEventListener('did-fail-load', (e) => {
